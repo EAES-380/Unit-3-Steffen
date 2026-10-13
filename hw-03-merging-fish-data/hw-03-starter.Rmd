@@ -33,6 +33,18 @@ knitr::opts_chunk$set(eval = FALSE)
 ```
 
 
+
+```{r load-packages, message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+```{r load-data-demo, message = FALSE}
+catch_data <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-06-08/fishing.csv")
+
+fish_stock <- read_csv("../data/great-lakes-fish-stock.csv")
+```
+
+
 ```{r parse-weight, eval=FALSE}
 fish_stock <- fish_stock %>%
   mutate(WEIGHT = parse_number(WEIGHT))
@@ -40,13 +52,9 @@ fish_stock <- fish_stock %>%
 
 # Load packages and data
 
-```{r load-packages, message=FALSE, warning=FALSE}
-library(tidyverse)
-```
 
-```{r load-data, message=FALSE}
-fish_stock <- read_csv("../data/great-lakes-fish-stock.csv")
-```
+
+
 
 # Exercises
 
@@ -55,12 +63,12 @@ fish_stock <- read_csv("../data/great-lakes-fish-stock.csv")
 **Goal:** Keep `year`, `lake`, `species`, `region`, and `values` from `catch_data`, and `YEAR`, `MONTH`, `LAKE`, `STATE_PROV`, `SPECIES`, and `WEIGHT` from `fish_stock`.
 
 ```{r catch-data-subset}
-catch_data %>%
+catch_data_filter <- catch_data %>%
 select(year, lake, species, region, values)
 ```
 
 ```{r fish-stock-subset}
-fish_stock %>%
+fish_stock_filter <- fish_stock %>%
 select(YEAR, MONTH, LAKE, STATE_PROV, SPECIES, WEIGHT)
 ```
 
@@ -69,7 +77,8 @@ select(YEAR, MONTH, LAKE, STATE_PROV, SPECIES, WEIGHT)
 **Goal:** Inspect both objects after `select()`.
 
 ```{r glimpse-subsets}
-# glimpse(catch_data) and glimpse(fish_stock)
+glimpse(catch_data_filter)
+glimpse(fish_stock_filter)
 ```
 
 ## Exercise 3 — Filter to Chinook Salmon in Lake Michigan
@@ -77,16 +86,16 @@ select(YEAR, MONTH, LAKE, STATE_PROV, SPECIES, WEIGHT)
 **Goal:** U.S. Total Chinook Salmon catch in Lake Michigan; CHS stocking in MI from MI, WI, IL, and IN.
 
 ```{r filter-catch}
-catch_data <- catch_data %>% 
+catch_data_chs <- catch_data %>% 
   filter(region == "U.S. Total",
-         species == "___",
-         lake == "___")
+         species == "Chinook Salmon",
+         lake == "Michigan")
 ```
 
 ```{r filter-stock}
-fish_stock <- fish_stock %>% 
-  filter(___ %in% c("MI", "WI", "IL", "IN"),
-         SPECIES == "___",
+fish_stock_chs <- fish_stock %>% 
+  filter(STATE_PROV %in% c("MI", "WI", "IL", "IN"),
+         SPECIES == "CHS",
          LAKE == "MI")
 ```
 
@@ -94,30 +103,37 @@ fish_stock <- fish_stock %>%
 
 **Goal:** Report `nrow`, `min(year)`, and `max(year)` for each filtered table with inline R.
 
-> Replace this text with three complete sentences that use inline R code.
+> There are `r nrow(catch_data)` rows in catch_data. The earliest year is `r min(catch_data$year)`, with the final year being `r max(catch_data$year)`.There are `r nrow(fish_stock)` rows in fish_stock. The earliest year is `r min(fish_stock$year)`, with the final year being `r max(fish_stock$year)`.
 
 ## Exercise 5 — Annual stocking totals
 
 **Goal:** One row per year in `fish_stock_yearly`, with `STOCK_WEIGHT_YR = sum(WEIGHT, na.rm = TRUE)`.
 
 ```{r stock-yearly}
-# Your group_by / summarize pipeline here
+fish_stock_yearly <- fish_stock_filter %>%
+  group_by(YEAR) %>%
+  mutate(STOCK_WEIGHT_YR = sum(WEIGHT, na.rm = TRUE))
 ```
 
 ## Harmonize names and units
 
 Set `eval=TRUE` after Exercise 5 runs successfully.
 
-```{r finalize-fish-stock, eval=FALSE}
+```{r finalize-fish-stock, eval=TRUE}
 fish_stock_yearly <- fish_stock_yearly %>% 
   rename(year = YEAR) %>% 
   mutate(stock_weight_yr_lbs = as.integer(STOCK_WEIGHT_YR * 2.205 / 1000)) %>% 
   select(year, stock_weight_yr_lbs)
 ```
 
-```{r finalize-catch-data, eval=FALSE}
+```{r finalize-catch-data, eval=TRUE}
 catch_data <- catch_data %>% 
   rename(catch_weight_yr_lbs = values)
+```
+
+```{r Confirm}
+glimpse(fish_stock_yearly)
+glimpse(catch_data)
 ```
 
 ## Exercise 6 — Six joins
@@ -125,13 +141,13 @@ catch_data <- catch_data %>%
 **Goal:** Join on `year` six ways and explain which rows each join keeps.
 
 ```{r left-join}
-# catch_data %>% left_join(fish_stock_yearly)
+catch_data %>% left_join(fish_stock_yearly)
 ```
 
 > Replace this text with 1–2 sentences on `left_join()`.
 
 ```{r right-join}
-# catch_data %>% right_join(fish_stock_yearly)
+catch_data %>% right_join(fish_stock_yearly)
 ```
 
 > Replace this text with 1–2 sentences on `right_join()`.
