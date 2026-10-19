@@ -57,6 +57,7 @@ ncol(fish_stock)
 nrow(fish_stock)
 ```
 > There are 56,232 observations, and 8 variables. The variables represent year, month, lake, state/province, species, number stocked, age of fish in months, and the weight of the fish.
+>TA Comment: (-2) Inline code required
 
 ## Exercise 2 — Filter to salmon stocking events
 
@@ -115,6 +116,7 @@ salmon_stock %>%
 **Interpretation (1–2 complete sentences):** Which lake has the largest mean number of fish per event, and which has the largest mean weight per event?
 
 > Lake Superior has the highest largest number of fish stocked per event, while Lake SC has the larges mean weight per event.
+>TA Comment: (-1) Should be Huron
 
 ## Exercise 5 — Trout pipeline
 
@@ -160,6 +162,7 @@ ggplot(mapping = aes(x=YEAR, y=SUM_NO_STOCKED, color=SPECIES)) +
 **Interpretation (2–3 complete sentences):** Which species was stocked at a higher rate? In which lake was stocking largest? Roughly when did stocking peak in that lake?
 
 > The chinook salmon are stocked at higher rates. Lake Michigan is stocked at the highest rate, and its stocking peaked around 1990.
+>TA Comment: (-5) for chunks nor running
 
 # Submission checklist
 
